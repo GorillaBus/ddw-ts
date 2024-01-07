@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+<body>
+    
+    <canvas id="myCanvas"></canvas>
+
+    <script>
+        function rotationMatrix(angle) {
+            const cos = Math.cos(angle);
+            const sin = Math.sin(angle);
+            return [
+                [cos, -sin, 0],
+                [sin, cos, 0],
+                [0, 0, 1]
+            ];
+        }
+
+        function translationMatrix(translate) {
+            return [
+                [1, 0, translate[0]],
+                [0, 1, translate[1]],
+                [0, 0, 1]
+            ];
+        }
+
+        function scalingMatrix(scale) {
+            return [
+                [scale[0], 0, 0],
+                [0, scale[1], 0],
+                [0, 0, 1]
+            ];
+        }
+
+        function multiplyMatrices(matrixA, matrixB) {
+            let result = new Array(matrixA.length).fill(0).map(row => new Array(matrixB[0].length).fill(0));
+
+            for (let i = 0; i < matrixA.length; i++) {
+                for (let j = 0; j < matrixB[0].length; j++) {
+                    for (let k = 0; k < matrixA[0].length; k++) {
+                        result[i][j] += matrixA[i][k] * matrixB[k][j];
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        function multiplyMatrixAndPoint(matrix, point) {
+            return [
+                point[0] * matrix[0][0] + point[1] * matrix[0][1] + matrix[0][2],
+                point[0] * matrix[1][0] + point[1] * matrix[1][1] + matrix[1][2]
+            ];
+        }
+
+        function transformPoints(points, transformMatrix) {
+            return points.map(point => multiplyMatrixAndPoint(transformMatrix, point));
+        }
+
+        function drawPolygon(context, points) {
+            context.beginPath();
+            context.moveTo(points[0][0], points[0][1]);
+            for (let i = 1; i < points.length; i++) {
+                context.lineTo(points[i][0], points[i][1]);
+            }
+            context.closePath();
+            context.stroke();
+        }
+
+        // Define un polígono simple con el centro en 0,0
+        const polygon = [[-50, -50], [50, -50], [50, 50], [-50, 50]];
+
+        // Configura el canvas
+        const canvas = document.getElementById('myCanvas');
+        const context = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Aplica transformaciones
+        const angle = Math.PI /4; // 45 grados en radianes
+        const translation = [200, 200]; // Traslación
+        const scale = [1, 1]; // Escala
+        
+        const rotationM = rotationMatrix(angle);
+        const scalingM = scalingMatrix(scale);
+        const translationM = translationMatrix(translation);
+        const combinedMatrix = multiplyMatrices(translationM, multiplyMatrices(rotationM, scalingM));
+        const transformedPolygon = transformPoints(polygon, combinedMatrix);
+
+        // Dibuja el polígono transformado
+        drawPolygon(context, transformedPolygon);
+    </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+1. Desacoplar el Contexto de Dibujo de la Lógica de la Escena
+
+    Contexto de Dibujo Independiente: Considera hacer que el contexto de dibujo (HTML Canvas Context) sea 
+    completamente independiente de la lógica de la escena. Esto te permitiría usar el mismo framework para 
+    diferentes tipos de representaciones (no solo canvas), como SVG o WebGL en el futuro.
+
+    Interfaz de Dibujado: Podrías definir una interfaz de dibujado (por ejemplo, IDrawable) que pueda ser 
+    implementada por diferentes clases como CanvasDrawer, SVGDrawer, etc. Scene y Body podrían utilizar esta 
+    interfaz para dibujar sin saber el detalle de implementación.
+
+2. Refinar el Manejo de la Escena y la Reproducción
+
+    Controlador de Escena (SceneController): Crea un controlador de escena que se encargue de gestionar las 
+    Body y sus interacciones, pero que no se preocupe del dibujado ni de los detalles de la animación.
+
+    ScenePlayer Mejorado: Haz que ScenePlayer gestione únicamente la reproducción (play, pause, FPS), pero 
+    que no se encargue de la lógica de la escena. Puede comunicarse con SceneController para actualizar la 
+    escena y con IDrawable para dibujar.
+
+3. Optimizar el Manejo de Entidades Físicas
+
+    Servicio de Físicas (PhysicsService): Mantén este servicio para los cálculos físicos. Este debería 
+    interactuar con Body, pero no directamente con la escena o el dibujado.
+
+    Vector y Transformaciones: Buena decisión al tener un Vector y un TransformationService. Esto permite 
+    una manipulación más matemática y precisa de las entidades.
+
+4. Implementar Patrones de Diseño Adecuados
+
+    Patrón de Observador: Podrías usar este patrón para manejar la comunicación entre las distintas partes 
+    de tu sistema, como entre SceneController y ScenePlayer.
+
+    Inyección de Dependencias: Utiliza este principio para hacer tu código más modular y fácil de probar. 
+    Por ejemplo, SceneController podría recibir instancias de PhysicsService y IDrawable como dependencias.
+
+5. Considerar la Extensibilidad y Flexibilidad
+
+    Plugins o Extensiones: Si tu framework va a crecer, piensa en cómo otros podrían extenderlo. ¿Podrían 
+    añadir sus propios tipos de Body, lógica de físicas, o métodos de dibujo?
+
+    Documentación y Ejemplos: Asegúrate de documentar bien tu arquitectura y proporcionar ejemplos. Esto es 
+    crucial para que otros desarrolladores puedan entender y utilizar tu framework eficientemente.
+
+6. Pruebas y Mantenibilidad
+
+    Pruebas Unitarias y de Integración: No olvides implementar pruebas para asegurarte de que cada componente 
+    funcione como se espera individualmente y en conjunto.
+
+    Refactorización y Revisión de Código: A medida que tu proyecto crezca, reserva tiempo para revisar y 
+    refactorizar tu código. Esto te ayudará a mantener la calidad y la escalabilidad del código.
